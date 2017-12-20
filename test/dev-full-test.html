@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, max-scale=2">
+  <title>Dev full test</title>
+  
+  <!-- Include mocha and chai -->
+    <link rel="stylesheet" href="./css/test-mocha.css" />
+    <script type="text/javascript" src="./lib/chai.js"></script>
+    <script type="text/javascript" src="./lib/test-mocha.js"></script>
+    <script>
+    try{
+
+      testMocha.setup( "bdd" );
+      
+      var testChai = chai;
+      delete chai;
+      var testAssert = testChai.assert;
+      
+      var testRunner = null;
+      document.addEventListener('DOMContentLoaded', function(event){
+      try {
+        var testRunner = testMocha.run();
+      } catch (e){
+        alert(e.stack)
+      }
+      });
+    } catch (e){
+      alert(e.stack)
+    }
+    </script>
+
+</head>
+<body>
+
+  <div id="test-mocha">test-mocha</div>
+  <div id="mocha></div>
+ 
+</body>
+</html>
