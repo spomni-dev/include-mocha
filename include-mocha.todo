@@ -3,3 +3,4 @@
   y #0-1 Create file system @done (2017-12-19 23:49)
   y #0-2 Add test environment @done (2017-12-20 16:04)
   o #0-3 Create tests
+  o #0-4 Project interface in JSDoc style
