@@ -1,6 +1,6 @@
 ☐ #0-3 Create tests
-  ☐ #0-3-0 Create test plan
+  ✔ #0-3-0 Create a test plan @done (2017-12-25 20:42:06)
     ✔ #0-3-0-1 Copy interface @done (2017-12-25 17:44:18)
-    ☐ #0-3-0-2 Create a test plan of the state when include-mocha.js is loaded.
-    ☐ #0-3-0-3 Create a test plan of state when includeMocha() is colled.
+    ✔ #0-3-0-2 Create a test plan of the state when include-mocha.js is loaded. @done (2017-12-25 20:42:03)
+    ✔ #0-3-0-3 Create a test plan of state when includeMocha() is colled. @done (2017-12-25 20:42:05)
   ☐ #0-3-1 create spec
