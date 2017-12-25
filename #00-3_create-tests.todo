@@ -4,5 +4,5 @@
     ✔ #0-3-0-2 Create a test plan of the state when include-mocha.js is loaded. @done (2017-12-25 20:42:03)
     ✔ #0-3-0-3 Create a test plan of state when includeMocha() is called. @done (2017-12-25 20:42:05)
   ☐ #0-3-1 create spec
-    ☐ #0-3-1-0 Create a specification of the state when include-mocha.js is loaded.
+    ✔ #0-3-1-0 Create a specification of the state when include-mocha.js is loaded. @done (2017-12-25 23:19:51)
     ☐ #0-3-1-1 Create a test plan of state when includeMocha() is called.
