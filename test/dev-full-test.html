@@ -12,7 +12,10 @@
     <script type="text/javascript" src="./lib/test-mocha.js"></script>
     <script>
 
-      testMocha.setup( "bdd" );
+      testMocha.setup({
+        ui : "bdd",
+        ignoreLeaks : true
+      });
 
       var testChai = chai;
       delete chai;

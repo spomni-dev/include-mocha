@@ -106,8 +106,8 @@
         //-- Should return an object of the class "Error" if the param "option.specRoot" is not string or null or undefined.
         //
         //-- Should return an object of the class "Error" if the param "option.cssPath" is not string or array or null or undefined.
-        //-- Should return an object of the class "Error" if the param "option.specPath" is array and any its alement is not string.
-        //-- Should return an object of the class "Error" if the param "option.specRoot" is not string or null or undefined.
+        //-- Should return an object of the class "Error" if the param "option.cssPath" is array and any its alement is not string.
+        //-- Should return an object of the class "Error" if the param "option.cssRoot" is not string or null or undefined.
         //
         //-- Should return an object of the class "Error" if the param "option.useChai" is not boolean or null or undefined.
         //-- Should return an object of the class "Error" if the param "option.defineAssert" is not boolean or null or undefined.
@@ -116,14 +116,14 @@
         //-- Should return an object of the class "Error" if the param "option.useChai" is true and the param "option.chaiPath" is not string or undefined.
         //-- Should return an object of the class "Error" if the param "option.libRoot" is not string or undefined.
         //
-        //-- Should return an object of the class "Error" if the param "option.mochaSetup" is not string or an object of the class "Object".
+        //-- Should return an object of the class "Error" if the param "option.mochaSetup" is not string or undefined or an object of the class "Object".
       //
     //
     /* Check global vars before init */
       //
       //-- Should return an object of the class "Error" if the global variable "mocha" is defined.
-      //-- Should return an object of the class "Error" if the global variable "chai" is defined and the param "useChai" is true.
-      //-- Should return an object of the class "Error" if the global variable  "assert" is defined and the params "useChai" and "defineAssert" are true.
+      //-- Should return an object of the class "Error" if the global variable "chai" is defined and the param "useChai" is true or undefined.
+      //-- Should return an object of the class "Error" if the global variable  "assert" is defined and the params "useChai" and "defineAssert" are true or undefined.
     //
     /* Check init of the member "includeMocha.option" */
       //
@@ -226,6 +226,20 @@
     //
   //
 //
+
+/*
+var testArr = [
+  "string",
+  1,
+  true,
+  false,
+  null,
+  undefined,
+  [],
+  {}
+];
+*/
+
 describe( "include-mocha.js", function(){
 
   var assert = testChai.assert;
@@ -388,41 +402,329 @@ describe( "include-mocha.js", function(){
       });
     });
   });
-  /* includeMocha( option ) */
-    //
-    /* Check input params */
-      //
-      /* Check type of the param "option" */
-        //-- Should return an object of the class "Error" if the param "option" is not string or array or object of the class "Object".
-      //
-      /* If the param "option" is array */
-        //-- Should return an object of the class "Error" if any element of the array "option" is not string.
-      //
-      /* If the param "option" is object */
-        //
-        //-- Should return an object of the class "Error" if the param "option.specPath" is not string or array.
-        //-- Should return an object of the class "Error" if the param "option.specPath" is array and any its element is not string.
-        //-- Should return an object of the class "Error" if the param "option.specRoot" is not string or null or undefined.
-        //
-        //-- Should return an object of the class "Error" if the param "option.cssPath" is not string or array or null or undefined.
-        //-- Should return an object of the class "Error" if the param "option.specPath" is array and any its alement is not string.
-        //-- Should return an object of the class "Error" if the param "option.specRoot" is not string or null or undefined.
-        //
-        //-- Should return an object of the class "Error" if the param "option.useChai" is not boolean or null or undefined.
-        //-- Should return an object of the class "Error" if the param "option.defineAssert" is not boolean or null or undefined.
-        //
-        //-- Should return an object of the class "Error" if the param "option.mochaPath" is not string or undefined.
-        //-- Should return an object of the class "Error" if the param "option.useChai" is true and the param "option.chaiPath" is not string or undefined.
-        //-- Should return an object of the class "Error" if the param "option.libRoot" is not string or undefined.
-        //
+
+  describe( 'includeMocha( option )', function(){
+
+    describe( 'Check input params', function(){
+
+      describe( 'Check type of the param "option"', function(){
+
+        it( 'Should return an object of the class "Error" if the param "option" is not string or array or object of the class "Object".', function(){
+
+          var testArr = [
+            1,
+            true,
+            null,
+            undefined
+          ]
+
+          for (var i=0; i<testArr.length; i++){
+            assert.instanceOf( includeMocha( testArr[i] ), Error );
+          }
+
+        });
+      });
+
+      describe( 'If the param "option" is array', function(){
+
+        it( 'Should return an object of the class "Error" if any element of the array "option" is not string.', function(){
+
+          var option = ["", 1, ""];
+
+          var result = includeMocha( option );
+          assert.instanceOf( result, Error );
+
+        });
+      });
+
+      describe( 'If the param "option" is object', function(){
+
+        it( 'Should return an object of the class "Error" if the param "option.specPath" is not string or array.', function(){
+
+          var testArr = [
+            1,
+            true,
+            null,
+            undefined,
+            {}
+          ]
+
+          for (var i=0; i<testArr.length; i++){
+
+            var option = { specPath : testArr[i] };
+            var result = includeMocha( option );
+
+            assert.instanceOf( result, Error);
+          }
+
+        });
+
+        it( 'Should return an object of the class "Error" if the param "option.specPath" is array and any its element is not string.', function(){
+            var option = { specPath : [
+              "sfsdf",
+              1,
+              undefined,
+              "asdf"
+            ]}
+
+            var result = includeMocha( option )
+
+            assert.instanceOf( result, Error);
+
+        });
+
+        it( 'Should return an object of the class "Error" if the param "option.specRoot" is not string or null or undefined.', function(){
+
+          var testArr = [
+            1,
+            true,
+            false,
+            [],
+            {}
+          ]
+
+          for (var i=0; i<testArr.length; i++){
+            var result = includeMocha({
+              specPath : "",
+              specRoot : testArr[i]
+            });
+
+            assert.instanceOf( result, Error );
+          }
+
+
+        });
+
+        it( 'Should return an object of the class "Error" if the param "option.cssPath" is not string or array or null or undefined.', function(){
+
+          var testArr = [
+            1,
+            true,
+            false,
+            {}
+          ];
+
+          for (var i=0; i<testArr.length; i++){
+            var result = includeMocha({
+              specPath : "",
+              cssPath : testArr[i]
+            });
+
+            assert.instanceOf( result, Error );
+          }
+
+        });
+
+        it( 'Should return an object of the class "Error" if the param "option.cssPath" is array and any its alement is not string.', function(){
+
+            var option = {
+              specPath : "",
+              cssPath : [
+                "string",
+                1,
+                undefined,
+                "string"
+              ]
+            };
+
+            var result = includeMocha( option );
+
+            assert.instanceOf( result, Error );
+        });
+
+        it( 'Should return an object of the class "Error" if the param "option.cssRoot" is not string or null or undefined.', function(){
+
+          var testArr = [
+            1,
+            true,
+            false,
+            [],
+            {}
+          ];
+
+          for (var i=0; i<testArr.length; i++){
+            var result = includeMocha({
+              specPath : "",
+              cssRoot : testArr[i]
+            });
+
+            assert.instanceOf( result, Error );
+          }
+        });
+
+        it( 'Should return an object of the class "Error" if the param "option.useChai" is not boolean or null or undefined.', function(){
+
+          var testArr = [
+            "string",
+            1,
+            [],
+            {}
+          ];
+
+          for (var i=0; i<testArr.length; i++){
+            var result = includeMocha({
+              specPath : "",
+              useChai : testArr[i]
+            });
+
+            assert.instanceOf( result, Error );
+          }
+        });
+
+        it( 'Should return an object of the class "Error" if the param "option.defineAssert" is not boolean or null or undefined.', function(){
+
+          var testArr = [
+            "string",
+            1,
+            [],
+            {}
+          ];
+
+          for (var i=0; i<testArr.length; i++){
+            var result = includeMocha({
+              specPath : "",
+              defineAssert : testArr[i]
+            });
+
+            assert.instanceOf( result, Error );
+          }
+        });
+
+        it( 'Should return an object of the class "Error" if the param "option.mochaPath" is not string or undefined.', function(){
+
+          var testArr = [
+            1,
+            true,
+            false,
+            null,
+            [],
+            {}
+          ];
+
+          for (var i=0; i<testArr.length; i++){
+            var result = includeMocha({
+              specPath : "",
+              mochaPath : testArr[i]
+            });
+
+            assert.instanceOf( result, Error );
+          }
+        });
+
+        it( 'Should return an object of the class "Error" if the param "option.useChai" is true and the param "option.chaiPath" is not string or undefined.', function(){
+
+          var testArr = [
+            1,
+            true,
+            false,
+            null,
+            [],
+            {}
+          ];
+
+          for (var i=0; i<testArr.length; i++){
+            var result = includeMocha({
+              specPath : "",
+              useChai : true,
+              chaiPath : testArr[i]
+            });
+
+            assert.instanceOf( result, Error );
+          }
+        });
+
+        it( 'Should return an object of the class "Error" if the param "option.libRoot" is not string or undefined.', function(){
+
+          var testArr = [
+            1,
+            true,
+            false,
+            null,
+            [],
+            {}
+          ];
+
+          for (var i=0; i<testArr.length; i++){
+            var result = includeMocha({
+              specPath : "",
+              libRoot : testArr[i]
+            });
+
+            assert.instanceOf( result, Error );
+          }
+        });
         //-- Should return an object of the class "Error" if the param "option.mochaSetup" is not string or an object of the class "Object".
-      //
-    //
-    /* Check global vars before init */
-      //
+
+        it( 'Should return an object of the class "Error" if the param "option.mochaSetup" is not string or undefined or an object of the class "Object".', function(){
+
+          var testArr = [
+            1,
+            true,
+            false,
+            null,
+            [],
+          ];
+
+          for (var i=0; i<testArr.length; i++){
+            var result = includeMocha({
+              specPath : "",
+              mochaSetup : testArr[i]
+            });
+
+            assert.instanceOf( result, Error );
+          }
+        });
+      });
+    });
+
+    describe( 'Check global vars before init', function(){
       //-- Should return an object of the class "Error" if the global variable "mocha" is defined.
-      //-- Should return an object of the class "Error" if the global variable "chai" is defined and the param "useChai" is true.
+      it( 'Should return an object of the class "Error" if the global variable "mocha" is defined.', function(){
+        window.mocha = true;
+
+        assert.instanceOf( includeMocha(""), Error );
+
+        window.mocha = undefined;
+      });
+
+      it( 'Should return an object of the class "Error" if the global variable "chai" is defined and the param "useChai" is true or undefined.', function(){
+        window.chai = true;
+
+        assert.instanceOf(
+          includeMocha({
+            specPath : "",
+            useChai : true
+          }),
+          Error
+        );
+
+        assert.instanceOf( includeMocha(""), Error );
+
+        window.chai = undefined;
+      });
       //-- Should return an object of the class "Error" if the global variable  "assert" is defined and the params "useChai" and "defineAssert" are true.
+
+      it( 'Should return an object of the class "Error" if the global variable  "assert" is defined and the params "useChai" and "defineAssert" are true or undefined.', function(){
+        window.assert = true;
+
+        var useChai = [true, undefined];
+        var defineAssert = [true, undefined];
+
+        for (var i=0; i<useChai.length; i++){
+          for (var j=0; j<defineAssert.length; j++){
+            var result = includeMocha({
+              specPath : "",
+              useChai : useChai[i],
+              defineAssert : defineAssert[j]
+            });
+
+            assert.instanceOf( result, Error );
+          }
+        }
+
+        window.assert = undefined;
+      });
+    });
     //
     /* Check init of the member "includeMocha.option" */
       //
@@ -523,5 +825,5 @@ describe( "include-mocha.js", function(){
       //-- The global var "assert" should be function if "includeMocha.option.useChai" and "includeMocha.option.defineAssert" are true.
       //-- The global var "aseert" should has the defined members "Throw" and "changes" if "includeMocha.option.useChai" and "includeMocha.option.defineAssert" are true.
     //
-  //
+  });
 });

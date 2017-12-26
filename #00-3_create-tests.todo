@@ -6,3 +6,5 @@
   ☐ #0-3-1 create spec
     ✔ #0-3-1-0 Create a specification of the state when include-mocha.js is loaded. @done (2017-12-25 23:19:51)
     ☐ #0-3-1-1 Create a test plan of state when includeMocha() is called.
+      ✔ #0-3-1-1-0 Check input params @done (2017-12-26 14:37:59)
+      ✔ #0-3-1-1-1 Check global vars before init @done (2017-12-26 14:38:00)
