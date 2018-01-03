@@ -23,7 +23,7 @@ if ( includeMocha === undefined ){
      *
      * @param {string|object} option.mochaSetup = "bdd" - Options to use in mocha.setup().
      *
-     * @returns {true|Error}
+     * @returns {undefined|Error}
      *
      * @member {object} option
      * @member {Runner} runner - Runner of mocha.js
@@ -33,6 +33,9 @@ if ( includeMocha === undefined ){
      *
     */
     function includeMocha ( option ){
+
+      var self = window.includeMocha;
+
       //-- Check input params
         //-- Check type of the param "option"
           if ( !isString( option )
@@ -155,6 +158,92 @@ if ( includeMocha === undefined ){
           ){
           return new Error( 'Tried redefine the global var "assert".' );
         }
+      //
+      //-- Init the member 'self.option'
+
+        self.option = {};
+        //-- Convert type of the input param "option"
+          if ( typeof( option ) == 'string'
+            || option instanceof Array
+            ){
+            option = { specPath : option };
+          }
+
+        //-- Init "specPath"
+          self.option.specPath = [];
+          if ( typeof( option.specPath ) == 'string' ){
+            self.option.specPath.push( option.specPath );
+          } else if ( option.specPath instanceof Array ){
+            for (var i=0; i<option.specPath.length; i++){
+              self.option.specPath.push( option.specPath[i] );
+            }
+          }
+        //-- Init "specRoot"
+          if ( option.specRoot === undefined ){
+            self.option.specRoot = 'spec/';
+          } else {
+            self.option.specRoot = option.specRoot;
+          }
+        //-- Init "cssPath"
+          if ( option.cssPath === null ){
+            self.option.cssPath = null;
+          } else {
+            self.option.cssPath = [];
+            if ( option.cssPath === undefined ){
+              self.option.cssPath.push( "mocha.css" );
+            } else if ( typeof( option.cssPath ) == 'string' ){
+              self.option.cssPath.push( option.cssPath );
+            } else {
+              for (var i=0; i<option.cssPath.length; i++){
+                self.option.cssPath.push( option.cssPath[i] );
+              }
+            }
+          }
+        //-- Init "cssRoot"
+          if ( option.cssRoot === undefined ){
+            self.option.cssRoot = 'css/';
+          } else {
+            self.option.cssRoot = option.cssRoot;
+          }
+        //-- Init "useChai"
+          if ( option.useChai === undefined ){
+            self.option.useChai = true;
+          } else {
+            self.option.useChai = option.useChai;
+          }
+        //-- Init "defineAssert"
+          if ( option.defineAssert === undefined ){
+            self.option.defineAssert = true;
+          } else {
+            self.option.defineAssert = option.defineAssert;
+          }
+        //-- Init "mochaPath"
+          if ( option.mochaPath === undefined ){
+            self.option.mochaPath = 'mocha.js';
+          } else {
+            self.option.mochaPath = option.mochaPath;
+          }
+        //-- Init "chaiPath"
+          if ( option.chaiPath === undefined ){
+            self.option.chaiPath = 'chai.js';
+          } else {
+            self.option.chaiPath = option.chaiPath;
+          }
+        //-- Init "libRoot"
+          if ( option.libRoot === undefined ){
+            self.option.libRoot = 'lib/';
+          } else if ( option.libRoot = null ){
+            self.option.libRoot = null;
+          } else {
+            self.option.libRoot = option.libRoot;
+          }
+        //-- Init "mochaSetup"
+          if ( option.mochaSetup === undefined ){
+            self.option.mochaSetup = "bdd";
+          } else {
+            self.option.mochaSetup = option.mochaSetup;
+          }
+        //
       //
       //-- Support functions
         function isString( param ){
