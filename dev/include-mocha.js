@@ -23,7 +23,7 @@ if ( includeMocha === undefined ){
      *
      * @param {string|object} option.mochaSetup = "bdd" - Options to use in mocha.setup().
      *
-     * @returns {true|Error}
+     * @returns {undefined|Error}
      *
      * @member {object} option
      * @member {Runner} runner - Runner of mocha.js
@@ -33,6 +33,9 @@ if ( includeMocha === undefined ){
      *
     */
     function includeMocha ( option ){
+
+      var self = window.includeMocha;
+
       //-- Check input params
         //-- Check type of the param "option"
           if ( !isString( option )
@@ -155,6 +158,33 @@ if ( includeMocha === undefined ){
           ){
           return new Error( 'Tried redefine the global var "assert".' );
         }
+      //
+      //-- Init the member self.option
+
+        self.option = {};
+        //-- Convert type of the input param "option"
+          if ( typeof( option ) == 'string'
+            || option instanceof Array
+            ){
+            option = { specPath : option };
+          }
+
+        //-- Init "specPath"
+          self.option.specPath = [];
+          if ( typeof( option.specPath ) == 'string' ){
+            self.option.specPath.push( option.specPath );
+          } else if ( option.specPath instanceof Array ){
+            for (var i=0; i<option.specPath.length; i++){
+              self.option.specPath.push( option.specPath[i] );
+            }
+          }
+        //-- Init "specRoot"
+          if ( option.specRoot === undefined ){
+            self.option.specRoot = '/spec';
+          } else {
+            self.option.specRoot = option.specRoot;
+          }
+        //
       //
       //-- Support functions
         function isString( param ){
