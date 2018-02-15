@@ -8,7 +8,7 @@
  * @param {string|null} [option.specRoot = "spec/"] - Path to the folder that contains test specification files.
  * @param {string|array} option.specPath - Path or paths to the test specification file or files.
  *
- * @param {string|null} [option.cssRoot = "css/"] - Path to the folder that contains css files.
+ * @param {string|null} [option.cssRoot = "css/"] - Path to the folder thhttps://github.com/spomni-dev/include-mocha.gitat contains css files.
  * @param {string|array|null} [option.cssPath = "mocha.css"] - Path|patches to the css file.
  *
  * @param {bool} [option.useChai = true] - If true, then include chai.js.
@@ -255,6 +255,20 @@ describe( "include-mocha.js", function(){
     window.mocha = undefined;
     window.chai = undefined;
     window.assert = undefined;
+    
+    var linkNodeList = document.querySelectorAll('head link');
+    [].forEach.call( linkNodeList, function(linkNode, i, linkNodeList){
+      if ( linkNode.includeMocha ){
+        document.head.removeChild( linkNode );
+      }
+    });
+    
+    var scriptNodeList = document.querySelectorAll('head script');
+    [].forEach.call( scriptNodeList, function(scriptNode, i, scriptNodeList){
+      if ( scriptNode.includeMocha ){
+        document.head.removeChild( scriptNode );
+      }
+    });
   }
 
   function areEqualArrays( array1, array2 ){
@@ -1194,7 +1208,7 @@ describe( "include-mocha.js", function(){
 
         it( 'Should be equal to the param "option.chaiPath" if it is defined.', function(){
 
-          var option = { specPath : "spwcPath", chaiPath : "chaiPath" };
+          var option = { specPath : "specPath", chaiPath : "chaiPath" };
 
           var result = includeMocha( option );
           assert.isUndefined( result );
@@ -1305,19 +1319,100 @@ describe( "include-mocha.js", function(){
         });
       });
     });
-    //
-    /* Check the inclusion of css and lib files */
-      //
-      /* Check the inclusion stylesheets */
-        //
-        //-- The DON-node "head" should contain the DOM-node "link" for each element of the array "includeMocha.option.cssPath" for it is not null.
-        //-- The attribute "href" of each inserted node should be equal to the string (includeMocha.option.cssRoot + includeMocha.option.cssPath[i]) if includeMocha.option.cssPath is not null.
-      //
-      /* Check the inclusion of lib files */
-        //
-        //-- The DON-node "head" should contain the DOM-node "script" that has the attribute "src" equal to the string (includeMocha.option.libRoot + includeMocha.option.mochaPath).
-        //-- The DON-node "head" should contain the DOM-node "script" that has the attribute "src" equal to the string (includeMocha.option.libRoot + includeMocha.option.chaiPath) if the includeMocha.option.useChai is true.
-      //
+
+    describe('Check the inclusion of css and lib files', function(){
+
+      describe( 'Check the inclusion stylesheets', function(){
+        
+        it( 'The DOM-node "head" should contain the DOM-node "link" for each element of the array "includeMocha.option.cssPath" for it is not null.', function(){
+          
+          var linkCountOnInit = document.querySelectorAll( 'head link' ).length;
+          
+          var result = includeMocha({
+            specPath : 'specPath',
+            cssPath : [
+              'cssPath0',
+              'cssPath1',
+              'cssPath2',
+              'cssPath3',
+              'cssPath4'
+            ]
+          });
+          assert.isUndefined( result );
+          
+          var linkCount = document.querySelectorAll( 'head link' ).length;
+          var cssPathCount = includeMocha.option.cssPath.length;
+
+          assert( (linkCount == ( linkCountOnInit + cssPathCount ) ), 'Wrong count of the tags "link".' );
+          
+          clearEnvironment();
+        });
+        
+        it( 'The attribute "href" of each inserted node should be equal to the string (includeMocha.option.cssRoot + includeMocha.option.cssPath[i]).', function(){
+        
+          var result = includeMocha({
+            specPath : 'specPath',
+            cssPath : [
+              'cssPath0',
+              'cssPath1',
+              'cssPath2',
+              'cssPath3',
+              'cssPath4'
+            ]
+          });
+          assert.isUndefined( result );
+          
+          var hrefArray = [];
+          includeMocha.option.cssPath.forEach(function(cssPath, i, cssPathArray){
+            hrefArray.push( includeMocha.option.cssRoot + cssPath );
+          });
+          
+          var linkNodeList = document.querySelectorAll('head link');
+          [].forEach.call( linkNodeList, function(linkNode, i, linkNodeList){
+            if ( linkNode.includeMocha ){
+              assert.include( hrefArray, linkNode.getAttribute('href') );
+            }
+          });
+          
+          clearEnvironment();
+        });
+        
+      });
+      
+      
+      describe( 'Check the inclusion of lib files', function(){
+
+        it( 'The DOM-node "head" should contain the DOM-node "script" that has the attribute "src" equal to the string (includeMocha.option.libRoot + includeMocha.option.mochaPath).', function(){
+          var option = {
+            specPath : 'specPath',
+            mochaPath : "mochaPath",
+            libRoot : 'libRoot/'
+          };
+          
+          var result = includeMocha( option );
+          assert.isUndefined( result );
+          
+          var src = option.libRoot + option.mochaPath;
+          var scriptIsIncluded = false;
+          var scriptNodeList = document.querySelectorAll('head script');
+          [].forEach.call( scriptNodeList, function(scriptNode, i, scriptNodeList){
+            if ( scriptNode.getAttribute('src') == src ){
+              scriptIsIncluded = true;
+            }
+          });
+          
+          assert( scriptIsIncluded, 'Inserted tag "script" not found.');
+          
+          clearEnvironment();
+        });
+        
+        it( 'The DOM-node "head" should contain the DOM-node "script" that has the attribute "src" equal to the string (includeMocha.option.libRoot + includeMocha.option.chaiPath) if the includeMocha.option.useChai is true.', function(){
+
+        });
+        
+      });
+      
+    });
     //
     /* Check mocha.setup() errors */
       //

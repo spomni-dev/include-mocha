@@ -33,7 +33,6 @@ if ( includeMocha === undefined ){
      *
     */
     function includeMocha ( option ){
-
       var self = window.includeMocha;
 
       //-- Check input params
@@ -142,6 +141,7 @@ if ( includeMocha === undefined ){
                   return new Error( 'Invalid input param. The param "option.mochaSetup" should be string or undefined or an object of the class Object.' )
               }
           }
+          
       //
       //-- Check global vars before init
         if ( !isUndefined( window.mocha ) ){
@@ -232,7 +232,7 @@ if ( includeMocha === undefined ){
         //-- Init "libRoot"
           if ( option.libRoot === undefined ){
             self.option.libRoot = 'lib/';
-          } else if ( option.libRoot = null ){
+          } else if ( option.libRoot === null ){
             self.option.libRoot = null;
           } else {
             self.option.libRoot = option.libRoot;
@@ -244,6 +244,21 @@ if ( includeMocha === undefined ){
             self.option.mochaSetup = option.mochaSetup;
           }
         //
+      //
+      //-- include stylesheets
+        if ( self.option.cssPath ){
+          self.option.cssPath.forEach(function( cssPath, i, cssPathArray){
+            var cssRoot = ( self.option.cssRoot ) ? self.option.cssRoot : "";
+            includeCSS( cssRoot+cssPath );
+          });
+        }
+      //
+      //-- include mocha.js
+        if ( !self.option.libRoot ){
+          includeScript( self.option.mochaPath );
+        } else {
+          includeScript( self.option.libRoot + self.option.mochaPath );
+        }
       //
       //-- Support functions
         function isString( param ){
@@ -274,6 +289,26 @@ if ( includeMocha === undefined ){
         function isBoolean( param ){
           if ( typeof param == 'boolean' ) return true;
           return false;
+        }
+        function includeCSS( cssPath ){
+          var link = document.createElement('link');
+          
+          link.rel = 'stylesheet';
+          link.href = cssPath;
+          link.includeMocha = true;
+
+          document.head.appendChild( link );
+        }
+        function includeScript( scriptPath, asyncFlag ){
+          asyncFlag = !!asyncFlag;
+          
+          var script = document.createElement( 'script' );
+          script.src = scriptPath;
+          script.async = asyncFlag;
+          script.includeMocha = true;
+          
+          document.head.appendChild( script );
+          
         }
       //
     }
