@@ -249,15 +249,25 @@ if ( includeMocha === undefined ){
         if ( self.option.cssPath ){
           self.option.cssPath.forEach(function( cssPath, i, cssPathArray){
             var cssRoot = ( self.option.cssRoot ) ? self.option.cssRoot : "";
-            includeCSS( cssRoot+cssPath );
+            var link = self.includeStylesheet( cssRoot+cssPath );
+            link.includeMocha = true;
           });
         }
       //
       //-- include mocha.js
         if ( !self.option.libRoot ){
-          includeScript( self.option.mochaPath );
+          self.includeScript( self.option.mochaPath ).includeMocha = true;
         } else {
-          includeScript( self.option.libRoot + self.option.mochaPath );
+          self.includeScript( self.option.libRoot + self.option.mochaPath ).includeMocha = true;
+        }
+      //
+      //-- include chai.js
+        if ( self.option.useChai ){
+          if ( !self.option.libRoot ){
+            self.includeScript( self.option.chaiPath ).includeMocha = true;
+          } else {
+            self.includeScript( self.option.libRoot + self.option.chaiPath ).includeMocha = true;
+          }
         }
       //
       //-- Support functions
@@ -289,26 +299,6 @@ if ( includeMocha === undefined ){
         function isBoolean( param ){
           if ( typeof param == 'boolean' ) return true;
           return false;
-        }
-        function includeCSS( cssPath ){
-          var link = document.createElement('link');
-          
-          link.rel = 'stylesheet';
-          link.href = cssPath;
-          link.includeMocha = true;
-
-          document.head.appendChild( link );
-        }
-        function includeScript( scriptPath, asyncFlag ){
-          asyncFlag = !!asyncFlag;
-          
-          var script = document.createElement( 'script' );
-          script.src = scriptPath;
-          script.async = asyncFlag;
-          script.includeMocha = true;
-          
-          document.head.appendChild( script );
-          
         }
       //
     }
