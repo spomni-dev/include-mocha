@@ -30,6 +30,7 @@ if ( includeMocha === undefined ){
      *
      * @method {HTMLScriptElement|Error} includeScript - Include in document a script file.
      * @method {HTMLLinkElement|Error} includeStylesheet - Include in document a stylesheet file.
+     * @method {undefined} onDOMContentLoaded - execute mocha.run() and define its result as "includeMocha.runner".
      *
     */
     function includeMocha ( option ){
@@ -159,6 +160,9 @@ if ( includeMocha === undefined ){
           return new Error( 'Tried redefine the global var "assert".' );
         }
       //
+      //-- init the private var "_thisScriptFirstNode"
+        var _thisScriptFirstNode = document.head.l
+      //
       //-- Init the member 'self.option'
 
         self.option = {};
@@ -255,20 +259,27 @@ if ( includeMocha === undefined ){
         }
       //
       //-- include mocha.js
+        var mochaScript = null;
         if ( !self.option.libRoot ){
-          self.includeScript( self.option.mochaPath ).includeMocha = true;
+          mochaScript = self.includeScript( self.option.mochaPath ).includeMocha = true;
         } else {
-          self.includeScript( self.option.libRoot + self.option.mochaPath ).includeMocha = true;
+          mochaScript = self.includeScript( self.option.libRoot + self.option.mochaPath ).includeMocha = true;
         }
+        mochaScript.includeMocha = true;
       //
       //-- include chai.js
         if ( self.option.useChai ){
+          var chaiScript = null;
           if ( !self.option.libRoot ){
-            self.includeScript( self.option.chaiPath ).includeMocha = true;
+            chaiScript = self.includeScript( self.option.chaiPath ).includeMocha = true;
           } else {
-            self.includeScript( self.option.libRoot + self.option.chaiPath ).includeMocha = true;
+            chaiScript = self.includeScript( self.option.libRoot + self.option.chaiPath ).includeMocha = true;
           }
+          chaiScript.includeMocha = true;
         }
+      //
+      //-- reload this file
+        
       //
       //-- Support functions
         function isString( param ){
@@ -358,9 +369,29 @@ if ( includeMocha === undefined ){
 
       return link;
     }
+  /** @method onDOMContentLoaded() - execute mocha.run()
+   * @memberOf includeMocha()
+   *
+   * @description execute mocha.run() and define "includeMocha.runner" as its result.
+   *
+   * @returns {undefined}
+  */
+    includeMocha.onDOMContentLoaded = function(){
+      includeMocha.runner = window.mocha.run();
+    }
   //
   function IncludeMocha(){
   }
   IncludeMocha.prototype.__proto__ = Function.prototype;
   //
+} else {
+  (function(){
+    window.mocha.setup( includeMocha.option.mochaSetup );
+  
+    if ( includeMocha.option.useChai && includeMocha().option.defineAssert ){
+      window.assert = window.chai.assert;
+    }
+  
+    document.addEventListener('DOMContentLoaded', includeMocha.onDOMContentLoaded);
+  })();
 }
