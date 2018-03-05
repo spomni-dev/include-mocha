@@ -20,6 +20,7 @@ if ( includeMocha === undefined ){
      * @param {string|null} option.libRoot = "lib/" - Path to the folder that contains lib files.
      * @param {string} option.mochaPath = "mocha.js" - Path to the mocha.js file.
      * @param {string} option.chaiPath = "chai.js" - Path to the chai.js file.
+     * @param {string} option.selfPath = "include-mocha.js" - Path to the file of this script.
      *
      * @param {string|object} option.mochaSetup = "bdd" - Options to use in mocha.setup().
      *
@@ -121,6 +122,13 @@ if ( includeMocha === undefined ){
                 ){
                 return new Error( 'Invalid input param. The param "option.mochaPath" should be string or undefined.' );
               }
+            //-- Should return an object of the class "Error" if the param "option.selfPath" is not string or undefined.
+              if ( !isString( option.selfPath )
+                && !isUndefined( option.selfPath )
+              ){
+                return new Error( 'Invalid input param. The param "option.selfPath" should be string or undefined.' );
+              }
+              
             //-- Should return an object of the class "Error" if the param "option.useChai" is true and the param "option.chaiPath" is not string or undefined.
               if ( option.useChai
                 && !isString( option.chaiPath )
@@ -233,6 +241,12 @@ if ( includeMocha === undefined ){
           } else {
             self.option.chaiPath = option.chaiPath;
           }
+        //-- Init "selfPath"
+          if ( option.selfPath === undefined ){
+            self.option.selfPath = 'include-mocha.js';
+          } else {
+            self.option.selfPath = option.selfPath;
+          }
         //-- Init "libRoot"
           if ( option.libRoot === undefined ){
             self.option.libRoot = 'lib/';
@@ -279,7 +293,7 @@ if ( includeMocha === undefined ){
         }
       //
       //-- reload this file
-        
+        self.includeScript();
       //
       //-- Support functions
         function isString( param ){
@@ -393,5 +407,6 @@ if ( includeMocha === undefined ){
     }
   
     document.addEventListener('DOMContentLoaded', includeMocha.onDOMContentLoaded);
+
   })();
 }

@@ -669,6 +669,27 @@ describe( "include-mocha.js", function(){
           }
         });
 
+        it( 'Should return an object of the class "Error" if the param "option.selfPath" is not string or undefined.', function(){
+          
+          var testArr = [
+            1,
+            true,
+            false,
+            null,
+            [],
+            {}
+          ];
+          
+          for (var i=0; i<testArr.length; i++){
+            var result = includeMocha({
+              specPath : "",
+              selfPath : testArr[i]
+            });
+          
+            assert.instanceOf( result, Error );
+          }
+        });
+
         it( 'Should return an object of the class "Error" if the param "option.useChai" is true and the param "option.chaiPath" is not string or undefined.', function(){
 
           var testArr = [
@@ -1232,6 +1253,52 @@ describe( "include-mocha.js", function(){
           assert.isUndefined( result );
 
           assert( includeMocha.option.chaiPath === option.chaiPath, "'includeMocha.option.chaiPath' don't equal to the input value." )
+
+          clearEnvironment();
+        });
+      });
+
+      describe( 'includeMocha.option.selfPath', function(){
+
+        it( 'Should be string', function(){
+          clearEnvironment();
+          var optionArr = [
+            "specPath",
+            { specPath : "specPath", selfPath : "selfPath" }
+          ];
+
+          for (var i=0; i<optionArr.length; i++){
+
+            var result = includeMocha( optionArr[i] );
+            assert.isUndefined( result );
+
+            assert.isString( includeMocha.option.selfPath );
+
+            clearEnvironment();
+          }
+        });
+
+        it( 'Should be equal to "includeMocha.js" if the param "option.selfPath" is undefined.', function(){
+          clearEnvironment();
+          var option = "specPath";
+
+          var result = includeMocha( option );
+          assert.isUndefined( result );
+
+          var selfPath = includeMocha.option.selfPath;
+          assert( selfPath === 'include-mocha.js', "'includeMocha.option.selfPath' don't equal to the string 'include-mocha.js'." );
+
+          clearEnvironment();
+        });
+
+        it( 'Should be equal to the param "option.selfPath" if it is defined.', function(){
+          clearEnvironment();
+          var option = { specPath : "specPath", selfPath : "selfPath" };
+
+          var result = includeMocha( option );
+          assert.isUndefined( result );
+
+          assert( includeMocha.option.selfPath === option.selfPath, "'includeMocha.option.selfPath' don't equal to the input value." )
 
           clearEnvironment();
         });
