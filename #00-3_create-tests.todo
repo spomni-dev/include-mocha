@@ -5,6 +5,7 @@
     ✔ #0-3-0-3 Create a test plan of state when includeMocha() is called. @done (2017-12-25 20:42:05)
   ☐ #0-3-1 create spec
     ✔ #0-3-1-0 Create a specification of the state when include-mocha.js is loaded. @done (2017-12-25 23:19:51)
+      ☐ #0-3-1-1 Check the method "includeMocha.onScriptReloaded()".
     ☐ #0-3-1-1 Create a test plan of state when includeMocha() is called.
       ✔ #0-3-1-1-0 Check input params @done (2017-12-26 14:37:59)
         ✔ #0-3-1-1-0-0 Check the param "selfPath" @done (2017-05-03 17:37:59)
@@ -15,7 +16,7 @@
         ✔ #0-3-1-1-3-0 Check the iclusition of css files
         ✔ #0-3-1-1-3-1 Check the inclution of the file "mocha.js"
         ✔ #0-3-1-1-3-2 Check the inclution of the file "chai.js"
-      - #0-3-1-1-4 Check mocha.setup() errors
-      ☐ #0-3-1-1-5 Check the inclusion of spec files
-      ☐ #0-3-1-1-6 Check mocha.run() errors
+        ☐ #0-3-1-1-3-2 Check the inclution of the file "include-mocha.js"
+    ☐ #0-3-1-2 Create a test plan of state when include-mocha.js is reloaded.
+      ☐ #0-3-1-1-5 Check the inclusion of then spec files
       ☐ #0-3-1-1-7 Check global vars after includeMocha

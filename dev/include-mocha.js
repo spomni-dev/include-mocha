@@ -29,9 +29,10 @@ if ( includeMocha === undefined ){
      * @member {object} option
      * @member {Runner} runner - Runner of mocha.js
      *
+     * @method {undefined} onScriptReloaded - Setup mocha.js, define window.assert, add the event listener "onDOMContentLoaded" and include spec files into the document.
+     * @method {undefined} onDOMContentLoaded - execute mocha.run() and define its result as "includeMocha.runner".
      * @method {HTMLScriptElement|Error} includeScript - Include in document a script file.
      * @method {HTMLLinkElement|Error} includeStylesheet - Include in document a stylesheet file.
-     * @method {undefined} onDOMContentLoaded - execute mocha.run() and define its result as "includeMocha.runner".
      *
     */
     function includeMocha ( option ){
@@ -393,6 +394,27 @@ if ( includeMocha === undefined ){
     includeMocha.onDOMContentLoaded = function(){
       includeMocha.runner = window.mocha.run();
     }
+  /** @method {undefined} onScriptReloaded - Setup mocha.js, define window.assert, add the event listener "onDOMContentLoaded" and include spec files into the document.
+   * @memberOf includeMocha()
+   *
+   * @description This function will be execute when this script is reloaded. Setup mocha.js, define window.assert, add the event listener "onDOMContentLoaded" and include spec files into the document.
+   *
+   * @returns {undefined}
+  */
+    includeMocha.onScriptReloaded = function(){
+    
+      var option = window.includeMocha.option;
+    
+      // Setup mocha
+        window.mocha.setup( option.mochaSetup );
+      // define window.assert
+        if ( option.useChai && option.defineAssert ){
+          window.assert = window.chai.assert;
+        }
+      // add the event listener "onDOMContentLoaded"
+        document.addEventListener('DOMContentLoaded', includeMocha.onDOMContentLoaded);
+      // ibclude spec files
+    }
   //
   function IncludeMocha(){
   }
@@ -400,9 +422,12 @@ if ( includeMocha === undefined ){
   //
 } else {
   (function(){
+    window.includeMocha.onScriptReloaded();
+    
+    
     window.mocha.setup( includeMocha.option.mochaSetup );
   
-    if ( includeMocha.option.useChai && includeMocha().option.defineAssert ){
+    if ( includeMocha.option.useChai && includeMocha.option.defineAssert ){
       window.assert = window.chai.assert;
     }
   
