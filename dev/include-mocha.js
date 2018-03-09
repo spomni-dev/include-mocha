@@ -129,7 +129,7 @@ if ( includeMocha === undefined ){
               ){
                 return new Error( 'Invalid input param. The param "option.selfPath" should be string or undefined.' );
               }
-              
+
             //-- Should return an object of the class "Error" if the param "option.useChai" is true and the param "option.chaiPath" is not string or undefined.
               if ( option.useChai
                 && !isString( option.chaiPath )
@@ -151,7 +151,7 @@ if ( includeMocha === undefined ){
                   return new Error( 'Invalid input param. The param "option.mochaSetup" should be string or undefined or an object of the class Object.' )
               }
           }
-          
+
       //
       //-- Check global vars before init
         if ( !isUndefined( window.mocha ) ){
@@ -390,11 +390,11 @@ if ( includeMocha === undefined ){
    * @description execute mocha.run() and define "includeMocha.runner" as its result.
    *
    * @returns {undefined}
-  */
+   */
     includeMocha.onDOMContentLoaded = function(){
       includeMocha.runner = window.mocha.run();
     }
-  /** @method {undefined} onScriptReloaded - Setup mocha.js, define window.assert, add the event listener "onDOMContentLoaded" and include spec files into the document.
+  /** @method onScriptReloaded() - Setup mocha.js, define window.assert, add the event listener "onDOMContentLoaded" and include spec files into the document.
    * @memberOf includeMocha()
    *
    * @description This function will be execute when this script is reloaded. Setup mocha.js, define window.assert, add the event listener "onDOMContentLoaded" and include spec files into the document.
@@ -402,9 +402,10 @@ if ( includeMocha === undefined ){
    * @returns {undefined}
   */
     includeMocha.onScriptReloaded = function(){
-    
-      var option = window.includeMocha.option;
-    
+
+      var self = window.includeMocha;
+      var option = self.option;
+
       // Setup mocha
         window.mocha.setup( option.mochaSetup );
       // define window.assert
@@ -413,7 +414,12 @@ if ( includeMocha === undefined ){
         }
       // add the event listener "onDOMContentLoaded"
         document.addEventListener('DOMContentLoaded', includeMocha.onDOMContentLoaded);
-      // ibclude spec files
+      // include spec files
+        option.specPath.forEach(function( specPath, i, specPathArray){
+          var specRoot = ( option.specRoot ) ? self.option.specRoot : "";
+          var script = self.includeScript( specRoot+specPath );
+          script.includeMocha = true;
+        });
     }
   //
   function IncludeMocha(){
@@ -423,14 +429,14 @@ if ( includeMocha === undefined ){
 } else {
   (function(){
     window.includeMocha.onScriptReloaded();
-    
-    
+
+
     window.mocha.setup( includeMocha.option.mochaSetup );
-  
+
     if ( includeMocha.option.useChai && includeMocha.option.defineAssert ){
       window.assert = window.chai.assert;
     }
-  
+
     document.addEventListener('DOMContentLoaded', includeMocha.onDOMContentLoaded);
 
   })();

@@ -231,30 +231,17 @@
   //
 //
 
-/*
-var testArr = [
-  "string",
-  1,
-  true,
-  false,
-  null,
-  undefined,
-  [],
-  {}
-];
-*/
-
 describe( "include-mocha.js", function(){
 
   var assert = testChai.assert;
   var defaultOption = {};
-  
+
   function wrIt( callback ){
     return function(){
       clearEnvironment();
-    
+
       callback();
-    
+
       clearEnvironment();
     };
   }
@@ -267,14 +254,14 @@ describe( "include-mocha.js", function(){
     window.mocha = undefined;
     window.chai = undefined;
     window.assert = undefined;
-    
+
     var linkNodeList = document.querySelectorAll('head link');
     [].forEach.call( linkNodeList, function(linkNode, i, linkNodeList){
       if ( linkNode.includeMocha ){
         document.head.removeChild( linkNode );
       }
     });
-    
+
     var scriptNodeList = document.querySelectorAll('head script');
     [].forEach.call( scriptNodeList, function(scriptNode, i, scriptNodeList){
       if ( scriptNode.includeMocha ){
@@ -458,6 +445,164 @@ describe( "include-mocha.js", function(){
 
         document.head.removeChild( newLastChild );
       });
+    });
+
+    describe( 'includeMocha.onScriptReloaded()', function(){
+
+      describe( 'Define assert', function(){
+
+        it('The global variable "assert" should be equal to the property "assert" of the global variable "chai" if params "includeMocha.option.useChai" and "includeMocha.option.defineAssert" are "true".', wrIt(function(){
+
+          var mocha = window.mocha = {
+            setup : function(){}
+          };
+
+          var chai = window.chai = { assert : "assert" };
+
+          var includeMocha = window.includeMocha;
+          includeMocha.option = {
+            specPath : [
+              'specPath0',
+              'specPath1',
+              'specPath2',
+              'specPath3',
+              'specPath4'
+            ],
+            useChai : true,
+            defineAssert : true
+          };
+
+          includeMocha.onScriptReloaded();
+
+          assert( window.assert === "assert" );
+
+        }));
+
+        it('The global variable "assert" should be "undefined" if the param "includeMocha.option.useChai" is false.', wrIt(function(){
+
+          var mocha = window.mocha = {
+            setup : function(){}
+          };
+
+          var chai = window.chai = { assert : "assert" };
+
+          var includeMocha = window.includeMocha;
+          includeMocha.option = {
+            specPath : [
+              'specPath0',
+              'specPath1',
+              'specPath2',
+              'specPath3',
+              'specPath4'
+            ],
+            useChai : false,
+            defineAssert : true
+          };
+
+          includeMocha.onScriptReloaded();
+
+          assert.isUndefined( window.assert );
+
+        }));
+
+        it('The global variable "assert" should be "undefined" if the param "includeMocha.option.defineAssert" is false.', wrIt(function(){
+
+          var mocha = window.mocha = {
+            setup : function(){}
+          };
+
+          var chai = window.chai = { assert : "assert" };
+
+          var includeMocha = window.includeMocha;
+          includeMocha.option = {
+            specPath : [
+              'specPath0',
+              'specPath1',
+              'specPath2',
+              'specPath3',
+              'specPath4'
+            ],
+            useChai : true,
+            defineAssert : false
+          };
+
+          includeMocha.onScriptReloaded();
+
+          assert.isUndefined( window.assert );
+
+        }));
+      });
+
+      describe( 'Include spec files', function(){
+
+        it( 'The DOM-node "head" should contain the DOM-node "script" for each element of the array "includeMocha.option.specPath"', wrIt(function(){
+
+          var mocha = window.mocha = {
+            setup : function(){}
+          };
+
+          var includeMocha = window.includeMocha;
+          includeMocha.option = {
+            specPath : [
+              'specPath0',
+              'specPath1',
+              'specPath2',
+              'specPath3',
+              'specPath4'
+            ],
+            useChai : true,
+            defineAssert : false
+          };
+
+          var scriptCountOnInit = document.querySelectorAll( 'head script' ).length;
+
+          includeMocha.onScriptReloaded();
+
+          var scriptCount = document.querySelectorAll( 'head script' ).length;
+          var scriptPathCount = includeMocha.option.specPath.length;
+
+          assert( (scriptCount == ( scriptCountOnInit + scriptPathCount ) ), 'Wrong count of the tags "script".' );
+        }));
+
+        it( 'The attribute "src" of each inserted node should be equal to the string (includeMocha.option.specRoot + includeMocha.option.specPath[i]).', wrIt(function(){
+
+          var mocha = window.mocha = {
+            setup : function(){}
+          };
+
+          var includeMocha = window.includeMocha;
+          includeMocha.option = {
+            specPath : [
+              'specPath0',
+              'specPath1',
+              'specPath2',
+              'specPath3',
+              'specPath4'
+            ],
+            specRoot : "specRoot/",
+            useChai : true,
+            defineAssert : false
+          };
+
+          var srcArray = [];
+          includeMocha.option.specPath.forEach(function(specPath, i, specPathArray){
+            srcArray.push( includeMocha.option.specRoot + specPath );
+          });
+
+          var scriptNodeList = document.querySelectorAll('head script');
+          [].forEach.call( scriptNodeList, function(scriptNode, i, scriptNodeList){
+            if ( scriptNode.includeMocha ){
+              assert.include( srcArray, scriptNode.getAttribute('href') );
+            }
+          });
+
+
+
+
+
+        }));
+      });
+
     });
   });
 
@@ -670,7 +815,7 @@ describe( "include-mocha.js", function(){
         });
 
         it( 'Should return an object of the class "Error" if the param "option.selfPath" is not string or undefined.', function(){
-          
+
           var testArr = [
             1,
             true,
@@ -679,13 +824,13 @@ describe( "include-mocha.js", function(){
             [],
             {}
           ];
-          
+
           for (var i=0; i<testArr.length; i++){
             var result = includeMocha({
               specPath : "",
               selfPath : testArr[i]
             });
-          
+
             assert.instanceOf( result, Error );
           }
         });
@@ -1409,12 +1554,12 @@ describe( "include-mocha.js", function(){
     describe('Check the inclusion of css and lib files', function(){
 
       describe( 'Check the inclusion stylesheets', function(){
-        
+
         it( 'The DOM-node "head" should contain the DOM-node "link" for each element of the array "includeMocha.option.cssPath" for it is not null.', function(){
           clearEnvironment();
-          
+
           var linkCountOnInit = document.querySelectorAll( 'head link' ).length;
-          
+
           var result = includeMocha({
             specPath : 'specPath',
             cssPath : [
@@ -1426,15 +1571,15 @@ describe( "include-mocha.js", function(){
             ]
           });
           assert.isUndefined( result );
-          
+
           var linkCount = document.querySelectorAll( 'head link' ).length;
           var cssPathCount = includeMocha.option.cssPath.length;
 
           assert( (linkCount == ( linkCountOnInit + cssPathCount ) ), 'Wrong count of the tags "link".' );
-          
+
           clearEnvironment();
         });
-        
+
         it( 'The attribute "href" of each inserted node should be equal to the string (includeMocha.option.cssRoot + includeMocha.option.cssPath[i]).', function(){
           clearEnvironment();
           var result = includeMocha({
@@ -1448,25 +1593,24 @@ describe( "include-mocha.js", function(){
             ]
           });
           assert.isUndefined( result );
-          
+
           var hrefArray = [];
           includeMocha.option.cssPath.forEach(function(cssPath, i, cssPathArray){
             hrefArray.push( includeMocha.option.cssRoot + cssPath );
           });
-          
+
           var linkNodeList = document.querySelectorAll('head link');
           [].forEach.call( linkNodeList, function(linkNode, i, linkNodeList){
             if ( linkNode.includeMocha ){
               assert.include( hrefArray, linkNode.getAttribute('href') );
             }
           });
-          
+
           clearEnvironment();
         });
-        
+
       });
-      
-      
+
       describe( 'Check the inclusion of lib files', function(){
 
         it( 'The DOM-node "head" should contain the DOM-node "script" that has the attribute "src" equal to the string (includeMocha.option.libRoot + includeMocha.option.mochaPath).', function(){
@@ -1476,10 +1620,10 @@ describe( "include-mocha.js", function(){
             mochaPath : "mochaPath",
             libRoot : 'libRoot/'
           };
-          
+
           var result = includeMocha( option );
           assert.isUndefined( result );
-          
+
           var src = option.libRoot + option.mochaPath;
           var scriptIsIncluded = false;
           var scriptNodeList = document.querySelectorAll('head script');
@@ -1488,23 +1632,23 @@ describe( "include-mocha.js", function(){
               scriptIsIncluded = true;
             }
           });
-          
+
           assert( scriptIsIncluded, 'Inserted tag "script" not found.');
-          
+
           clearEnvironment();
         });
-        
+
         it( 'The DOM-node "head" should contain the DOM-node "script" that has the attribute "src" equal to the string (includeMocha.option.libRoot + includeMocha.option.chaiPath) if the includeMocha.option.useChai is true.', function(){
           clearEnvironment();
           var option = {
             specPath : 'specPath',
             chaiPath : 'chaiPath',
             libRoot : 'libRoot'
-          } 
-          
+          }
+
           var result = includeMocha( option );
           assert.isUndefined( result );
-          
+
           var src = option.libRoot + option.chaiPath;
           var scriptNodeList = document.querySelectorAll('head script');
           var scriptIsIncluded = false;
@@ -1513,18 +1657,18 @@ describe( "include-mocha.js", function(){
               scriptIsIncluded = true;
             }
           });
-          
+
           assert(scriptIsIncluded, 'Inserted tag "script" not found.');
-          
+
           clearEnvironment();
         });
-        
+
       });
-      
+
     });
 
     describe( 'Check the inclusion of spec files', function(){
-      
+
       it( 'The DOM-node "head" should contain the DOM-node "script" for each element of the array "includeMocha.option.specPath".', wrIt(function(){
         var result = includeMocha({
           specPath : [
@@ -1536,12 +1680,12 @@ describe( "include-mocha.js", function(){
           ]
         });
         assert.isUndefined( result );
-        
+
         var srcArray = [];
         includeMocha.option.specPath.forEach(function(specPath, i, specPathArray){
           srcArray.push( includeMocha.option.libRoot + specPath );
         });
-        
+
         var scriptNodeList = document.querySelectorAll('head script');
         [].forEach.call( scriptNodeList, function(scriptNode, i, scriptNodeList){
           if ( scriptNode.includeMocha ){
