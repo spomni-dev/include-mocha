@@ -1669,7 +1669,31 @@ describe( "include-mocha.js", function(){
 
     describe( 'Check the inclution of the file "include-mocha.js"', function(){
 
+      it( 'The DOM-node "head" should contain the DOM-node "script" that has the attribute "src" equal to the string (includeMocha.option.libRoot + includeMocha.option.selfPath).', wrIt(function(){
+
+        var option = {
+          specPath : 'specPath',
+          selfPath : "selfPath",
+          libRoot : 'libRoot/'
+        };
+
+        var result = includeMocha( option );
+        assert.isUndefined( result );
+
+        var src = option.libRoot + option.selfPath;
+        var scriptIsIncluded = false;
+        var scriptNodeList = document.querySelectorAll('head script');
+        [].forEach.call( scriptNodeList, function(scriptNode, i, scriptNodeList){
+          if ( scriptNode.getAttribute('src') == src ){
+            scriptIsIncluded = true;
+          }
+        });
+
+        assert( scriptIsIncluded, 'Inserted tag "script" not found.');
+
+      }));
     });
+
   });
 
   describe( 'The file "include-mocha.js" is reloaded', function(){

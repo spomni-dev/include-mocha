@@ -294,7 +294,13 @@ if ( includeMocha === undefined ){
         }
       //
       //-- reload this file
-        self.includeScript();
+        var selfScript = null;
+        if ( !self.option.libRoot ){
+          selfScript = self.includeScript( self.option.selfPath ).includeMocha = true;
+        } else {
+          selfScript = self.includeScript( self.option.libRoot + self.option.selfPath ).includeMocha = true;
+        }
+        selfScript.includeMocha = true;
       //
       //-- Support functions
         function isString( param ){
