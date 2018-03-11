@@ -17,11 +17,17 @@ describe( 'The file "include-mocha.js" is reloaded', function(){
             && chai.AssertionError !== undefined
       );
     });
-    //
 
-
-    //-- The global var "assert" should be function if "includeMocha.option.useChai" and "includeMocha.option.defineAssert" are true.
-    //-- The global var "aseert" should has the defined members "Throw" and "changes" if "includeMocha.option.useChai" and "includeMocha.option.defineAssert" are true.
+    it( 'The global var "assert" should be function', function(){
+      assert.isFunction( window.assert );
+    });
+    it( 'The global var "assert" should has the defined members "Throw" and "changes"', function(){
+      assert(
+        assert.Throw !== undefined
+        &&
+        assert.changes !== undefined
+      );
+    });
   });
 
 });

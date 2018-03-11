@@ -22,6 +22,6 @@
       ✔ #0-3-1-1-0 Check the inclusion of the spec files @done (2018-3-11 12:03:03)
       ☐ #0-3-1-1-1 Check global vars after includeMocha
         ✔ #0-3-1-1-1-0 Execute "includeMocha()" @done (2018-3-11 12:47:22)
-        ☐ #0-3-1-1-1-1 Check window.mocha
-        ☐ #0-3-1-1-1-2 Check window.chai
-        ☐ #0-3-1-1-1-3 Check window.assert
+        ✔ #0-3-1-1-1-1 Check window.mocha @done (2018-3-11 12:49:40)
+        ✔ #0-3-1-1-1-2 Check window.chai @done (2018-3-11 12:54:26)
+        ✔ #0-3-1-1-1-3 Check window.assert @done (2018-3-11 12:57:27)
