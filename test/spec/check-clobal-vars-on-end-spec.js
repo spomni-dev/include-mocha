@@ -2,10 +2,12 @@ describe( 'The file "include-mocha.js" is reloaded', function(){
 
   describe( 'Check global vars after includeMocha', function(){
 
-    //-- The global var "mocha" should be function.
-    //-- The member "name" of the variable "mocha" should be equal to "Mocha".
-    //
-
+    it( 'The global var "mocha" should be function.', function(){
+      assert.isFunction( window.mocha );
+    });
+    it( 'The member "name" of the variable "mocha" should be equal to "Mocha".', function(){
+      assert( mocha.name === "Mocha" );
+    });
 
     //-- The global var "chai" should contain an object of the class "Object" if "includeMocha.option.useChai" is true.
     //-- The global var "chai" should has the defined members "Assertion" and "AssertionError" if "includeMocha.option.useChai" is true.
