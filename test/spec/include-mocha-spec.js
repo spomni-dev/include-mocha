@@ -606,7 +606,7 @@ describe( "include-mocha.js", function(){
     });
   });
 
-  describe( 'includeMocha( option )', function(){
+  describe( 'includeMocha( option ) is called', function(){
 
     describe( 'Check input params', function(){
 
@@ -1667,6 +1667,13 @@ describe( "include-mocha.js", function(){
 
     });
 
+    describe( 'Check the inclution of the file "include-mocha.js"', function(){
+
+    });
+  });
+
+  describe( 'The file "include-mocha.js" is reloaded', function(){
+
     describe( 'Check the inclusion of spec files', function(){
 
       it( 'The DOM-node "head" should contain the DOM-node "script" for each element of the array "includeMocha.option.specPath".', wrIt(function(){
@@ -1695,11 +1702,7 @@ describe( "include-mocha.js", function(){
       }));
       //-- The attribute "src" of each inserted node should be equal to the string (includeMocha.option.cssRoot + includeMocha.option.specPath[i]).
     });
-    //
-    /* Check mocha.run() errors */
-      //
-      // Should return an object of the class "Error" if the function "mocha.run()" threw error.
-    //
+
     /* Check global vars after includeMocha */
       //
       //-- The global var "mocha" should be function.
@@ -1710,6 +1713,5 @@ describe( "include-mocha.js", function(){
       //
       //-- The global var "assert" should be function if "includeMocha.option.useChai" and "includeMocha.option.defineAssert" are true.
       //-- The global var "aseert" should has the defined members "Throw" and "changes" if "includeMocha.option.useChai" and "includeMocha.option.defineAssert" are true.
-    //
   });
 });
