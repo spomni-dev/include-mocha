@@ -408,7 +408,6 @@ if ( includeMocha === undefined ){
    * @returns {undefined}
    */
     includeMocha.onScriptReloaded = function(){
-console.log('includeMocha.onScriptReloaded() is started');
       var self = window.includeMocha;
       var option = self.option;
 
@@ -434,7 +433,6 @@ console.log('includeMocha.onScriptReloaded() is started');
   //
 } else {
   (function(){
-console.log('include-mocha.js is reloaded');
     window.includeMocha.onScriptReloaded();
 
     window.mocha.setup( includeMocha.option.mochaSetup );
