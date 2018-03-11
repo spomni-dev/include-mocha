@@ -1505,6 +1505,8 @@ describe( "include-mocha.js", function(){
         clearEnvironment();
         it( 'Should be string or object of the class "Object".', function(){
 
+          clearEnvironment();
+
           var optionArr = [
             { specPath : "specPath", mochaSetup : "mochaSetup" },
             { specPath : "specPath", mochaSetup : { ui : "bdd"} }
@@ -1696,46 +1698,21 @@ describe( "include-mocha.js", function(){
 
   });
 
-  describe( 'The file "include-mocha.js" is reloaded', function(){
+  describe( 'Execute "includeMocha()" for next tests', function(){
 
-    describe( 'Check the inclusion of spec files', function(){
+    it( 'Execute "includeMocha()"', function(){
 
-      it( 'The DOM-node "head" should contain the DOM-node "script" for each element of the array "includeMocha.option.specPath".', wrIt(function(){
-        var result = includeMocha({
-          specPath : [
-            'specPath0',
-            'specPath1',
-            'specPath2',
-            'specPath3',
-            'specPath4'
-          ]
-        });
-        assert.isUndefined( result );
+      window.mocha = undefined;
+      window.chai = undefined;
 
-        var srcArray = [];
-        includeMocha.option.specPath.forEach(function(specPath, i, specPathArray){
-          srcArray.push( includeMocha.option.libRoot + specPath );
-        });
+      clearEnvironment();
 
-        var scriptNodeList = document.querySelectorAll('head script');
-        [].forEach.call( scriptNodeList, function(scriptNode, i, scriptNodeList){
-          if ( scriptNode.includeMocha ){
-            assert.include( srcArray, scriptNode.getAttribute('src') );
-          }
-        });
-      }));
-      //-- The attribute "src" of each inserted node should be equal to the string (includeMocha.option.cssRoot + includeMocha.option.specPath[i]).
+      var result = includeMocha({
+        specPath : 'check-clobal-vars-on-end-spec.js',
+        selfPath : '../../dev/include-mocha.js'
+      });
+
+      assert.isUndefined( result );
     });
-
-    /* Check global vars after includeMocha */
-      //
-      //-- The global var "mocha" should be function.
-      //-- The member "name" of the variable "mocha" should be equal to "Mocha".
-      //
-      //-- The global var "chai" should contain an object of the class "Object" if "includeMocha.option.useChai" is true.
-      //-- The global var "chai" should has the defined members "Assertion" and "AssertionError" if "includeMocha.option.useChai" is true.
-      //
-      //-- The global var "assert" should be function if "includeMocha.option.useChai" and "includeMocha.option.defineAssert" are true.
-      //-- The global var "aseert" should has the defined members "Throw" and "changes" if "includeMocha.option.useChai" and "includeMocha.option.defineAssert" are true.
   });
 });

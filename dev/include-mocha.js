@@ -18,9 +18,9 @@ if ( includeMocha === undefined ){
     * @param {bool} option.defineAssert = true - If true, then define the variable "assert" as chai.assert.
     *
     * @param {string|null} option.libRoot = "lib/" - Path to the folder that contains lib files.
-    * @param {string} option.mochaPath = "mocha.js" - Path to the mocha.js file.
-    * @param {string} option.chaiPath = "chai.js" - Path to the chai.js file.
-    * @param {string} option.selfPath = "include-mocha.js" - Path to the file of this script.
+    * @param {string} option.mochaPath = "mocha.js" - Path from the libRoot to the mocha.js file.
+    * @param {string} option.chaiPath = "chai.js" - Path from the libRoot to the chai.js file.
+    * @param {string} option.selfPath = "include-mocha.js" - Path from the libRoot to the file of this script.
     *
     * @param {string|object} option.mochaSetup = "bdd" - Options to use in mocha.setup().
     *
@@ -406,9 +406,9 @@ if ( includeMocha === undefined ){
    * @description This function will be execute when this script is reloaded. Setup mocha.js, define window.assert, add the event listener "onDOMContentLoaded" and include spec files into the document.
    *
    * @returns {undefined}
-  */
+   */
     includeMocha.onScriptReloaded = function(){
-
+console.log('includeMocha.onScriptReloaded() is started');
       var self = window.includeMocha;
       var option = self.option;
 
@@ -434,8 +434,8 @@ if ( includeMocha === undefined ){
   //
 } else {
   (function(){
+console.log('include-mocha.js is reloaded');
     window.includeMocha.onScriptReloaded();
-
 
     window.mocha.setup( includeMocha.option.mochaSetup );
 
