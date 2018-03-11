@@ -30,10 +30,10 @@ if ( includeMocha === undefined ){
      *
      * @method {HTMLScriptElement|Error} includeScript - Include in document a script file.
      * @method {HTMLLinkElement|Error} includeStylesheet - Include in document a stylesheet file.
+     * @method {undefined} onDOMContentLoaded - execute mocha.run() and define its result as "includeMocha.runner".
      *
     */
     function includeMocha ( option ){
-
       var self = window.includeMocha;
 
       //-- Check input params
@@ -142,6 +142,7 @@ if ( includeMocha === undefined ){
                   return new Error( 'Invalid input param. The param "option.mochaSetup" should be string or undefined or an object of the class Object.' )
               }
           }
+
       //
       //-- Check global vars before init
         if ( !isUndefined( window.mocha ) ){
@@ -159,7 +160,10 @@ if ( includeMocha === undefined ){
           return new Error( 'Tried redefine the global var "assert".' );
         }
       //
-      //-- Init the member self.option
+      //-- init the private var "_thisScriptFirstNode"
+        var _thisScriptFirstNode = document.head.l
+      //
+      //-- Init the member 'self.option'
 
         self.option = {};
         //-- Convert type of the input param "option"
@@ -180,11 +184,102 @@ if ( includeMocha === undefined ){
           }
         //-- Init "specRoot"
           if ( option.specRoot === undefined ){
-            self.option.specRoot = '/spec';
+            self.option.specRoot = 'spec/';
           } else {
             self.option.specRoot = option.specRoot;
           }
+        //-- Init "cssPath"
+          if ( option.cssPath === null ){
+            self.option.cssPath = null;
+          } else {
+            self.option.cssPath = [];
+            if ( option.cssPath === undefined ){
+              self.option.cssPath.push( "mocha.css" );
+            } else if ( typeof( option.cssPath ) == 'string' ){
+              self.option.cssPath.push( option.cssPath );
+            } else {
+              for (var i=0; i<option.cssPath.length; i++){
+                self.option.cssPath.push( option.cssPath[i] );
+              }
+            }
+          }
+        //-- Init "cssRoot"
+          if ( option.cssRoot === undefined ){
+            self.option.cssRoot = 'css/';
+          } else {
+            self.option.cssRoot = option.cssRoot;
+          }
+        //-- Init "useChai"
+          if ( option.useChai === undefined ){
+            self.option.useChai = true;
+          } else {
+            self.option.useChai = option.useChai;
+          }
+        //-- Init "defineAssert"
+          if ( option.defineAssert === undefined ){
+            self.option.defineAssert = true;
+          } else {
+            self.option.defineAssert = option.defineAssert;
+          }
+        //-- Init "mochaPath"
+          if ( option.mochaPath === undefined ){
+            self.option.mochaPath = 'mocha.js';
+          } else {
+            self.option.mochaPath = option.mochaPath;
+          }
+        //-- Init "chaiPath"
+          if ( option.chaiPath === undefined ){
+            self.option.chaiPath = 'chai.js';
+          } else {
+            self.option.chaiPath = option.chaiPath;
+          }
+        //-- Init "libRoot"
+          if ( option.libRoot === undefined ){
+            self.option.libRoot = 'lib/';
+          } else if ( option.libRoot === null ){
+            self.option.libRoot = null;
+          } else {
+            self.option.libRoot = option.libRoot;
+          }
+        //-- Init "mochaSetup"
+          if ( option.mochaSetup === undefined ){
+            self.option.mochaSetup = "bdd";
+          } else {
+            self.option.mochaSetup = option.mochaSetup;
+          }
         //
+      //
+      //-- include stylesheets
+        if ( self.option.cssPath ){
+          self.option.cssPath.forEach(function( cssPath, i, cssPathArray){
+            var cssRoot = ( self.option.cssRoot ) ? self.option.cssRoot : "";
+            var link = self.includeStylesheet( cssRoot+cssPath );
+            link.includeMocha = true;
+          });
+        }
+      //
+      //-- include mocha.js
+        var mochaScript = null;
+        if ( !self.option.libRoot ){
+          mochaScript = self.includeScript( self.option.mochaPath ).includeMocha = true;
+        } else {
+          mochaScript = self.includeScript( self.option.libRoot + self.option.mochaPath ).includeMocha = true;
+        }
+        mochaScript.includeMocha = true;
+      //
+      //-- include chai.js
+        if ( self.option.useChai ){
+          var chaiScript = null;
+          if ( !self.option.libRoot ){
+            chaiScript = self.includeScript( self.option.chaiPath ).includeMocha = true;
+          } else {
+            chaiScript = self.includeScript( self.option.libRoot + self.option.chaiPath ).includeMocha = true;
+          }
+          chaiScript.includeMocha = true;
+        }
+      //
+      //-- reload this file
+
       //
       //-- Support functions
         function isString( param ){
@@ -274,9 +369,29 @@ if ( includeMocha === undefined ){
 
       return link;
     }
+  /** @method onDOMContentLoaded() - execute mocha.run()
+   * @memberOf includeMocha()
+   *
+   * @description execute mocha.run() and define "includeMocha.runner" as its result.
+   *
+   * @returns {undefined}
+  */
+    includeMocha.onDOMContentLoaded = function(){
+      includeMocha.runner = window.mocha.run();
+    }
   //
   function IncludeMocha(){
   }
   IncludeMocha.prototype.__proto__ = Function.prototype;
   //
+} else {
+  (function(){
+    window.mocha.setup( includeMocha.option.mochaSetup );
+
+    if ( includeMocha.option.useChai && includeMocha().option.defineAssert ){
+      window.assert = window.chai.assert;
+    }
+
+    document.addEventListener('DOMContentLoaded', includeMocha.onDOMContentLoaded);
+  })();
 }

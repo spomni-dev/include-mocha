@@ -8,7 +8,7 @@
  * @param {string|null} [option.specRoot = "spec/"] - Path to the folder that contains test specification files.
  * @param {string|array} option.specPath - Path or paths to the test specification file or files.
  *
- * @param {string|null} [option.cssRoot = "css/"] - Path to the folder that contains css files.
+ * @param {string|null} [option.cssRoot = "css/"] - Path to the folder thhttps://github.com/spomni-dev/include-mocha.gitat contains css files.
  * @param {string|array|null} [option.cssPath = "mocha.css"] - Path|patches to the css file.
  *
  * @param {bool} [option.useChai = true] - If true, then include chai.js.
@@ -144,8 +144,10 @@
       /* includeMocha.option.cssPath */
         //
         //-- Should be array or null
-        //-- Should contain one element "mocha.js" if the param "option.cssPath" is undefined.
-        //-- Should be equal to the param "option.cssPath" if it is defined.
+        //-- Should contain one element "mocha.css" if the param "option.cssPath" is undefined.
+        //-- Should be equal to the param "option.cssPath" if it is null.
+        //-- Should contain one element equal to the param "option.specPath" if it is string.
+        //-- Should contain all elements of the param "option.cssPath" if it is array.
       //
       /* includeMocha.option.cssRoot */
         //
@@ -247,12 +249,38 @@ describe( "include-mocha.js", function(){
   var assert = testChai.assert;
   var defaultOption = {};
 
+  function wrIt( callback ){
+    return function(){
+      clearEnvironment();
+
+      callback();
+
+      clearEnvironment();
+    };
+  }
+
   function clearEnvironment(){
-    window.includeMocha.option = null;
-    window.includeMocha.runner = null;
+    if ( window.includeMocha ){
+      window.includeMocha.option = null;
+      window.includeMocha.runner = null;
+    }
     window.mocha = undefined;
     window.chai = undefined;
     window.assert = undefined;
+
+    var linkNodeList = document.querySelectorAll('head link');
+    [].forEach.call( linkNodeList, function(linkNode, i, linkNodeList){
+      if ( linkNode.includeMocha ){
+        document.head.removeChild( linkNode );
+      }
+    });
+
+    var scriptNodeList = document.querySelectorAll('head script');
+    [].forEach.call( scriptNodeList, function(scriptNode, i, scriptNodeList){
+      if ( scriptNode.includeMocha ){
+        document.head.removeChild( scriptNode );
+      }
+    });
   }
 
   function areEqualArrays( array1, array2 ){
@@ -267,6 +295,11 @@ describe( "include-mocha.js", function(){
     }
 
     return true;
+  }
+
+  function isSimpleObject( object ){
+    if ( object.__proto__.constructor == Object ) return true;
+    return false;
   }
 
   describe( "include-mocha.js loaded", function(){
@@ -755,6 +788,7 @@ describe( "include-mocha.js", function(){
       describe( 'includeMocha.option.specPath', function(){
 
         it( 'Should be array', function(){
+          clearEnvironment();
           var optionArr = [
             "specPath",
             ["specPath0", "specPath1", "specPath2"],
@@ -770,10 +804,11 @@ describe( "include-mocha.js", function(){
 
             clearEnvironment();
           }
+
         });
 
         it( 'Should contain one element equal to the param "option" if it is string.', function(){
-
+          clearEnvironment();
           var option = "specPath";
           var result = includeMocha( option );
 
@@ -785,6 +820,7 @@ describe( "include-mocha.js", function(){
         });
 
         it( 'Should contain all elements of the param "option" if it is array.', function(){
+          clearEnvironment();
           var option = ["specPath0", "specPath1", "specPath2"];
 
           var result = includeMocha( option );
@@ -796,7 +832,7 @@ describe( "include-mocha.js", function(){
         });
 
         it( 'Should contain one element equal to the param "option.specPath" if it is string.', function(){
-
+          clearEnvironment();
           var option = { specPath : "specPath"};
           var result = includeMocha( option );
 
@@ -808,6 +844,7 @@ describe( "include-mocha.js", function(){
         });
 
         it( 'Should contain all elements of the param "option.specPath" if it is array.', function(){
+          clearEnvironment();
           var option = { specPath : ["specPath0", "specPath1", "specPath2"] };
 
           var result = includeMocha( option );
@@ -817,12 +854,12 @@ describe( "include-mocha.js", function(){
 
           clearEnvironment();
         });
-
       });
 
       describe( 'includeMocha.option.specRoot', function(){
 
         it( 'Should be string or null.', function(){
+          clearEnvironment();
           var optionArr = [
             { specPath : "" },
             { specPath : "", specRoot : null },
@@ -842,19 +879,19 @@ describe( "include-mocha.js", function(){
         });
 
         it( 'Should be equal to "spec/" if the param "option.specRoot" is undefined.', function(){
-
+          clearEnvironment();
           var option = "specPath";
           var result = includeMocha( option );
 
           assert.isUndefined( result );
-          assert( (includeMocha.option.specRoot === '/spec'), "'includeMocha.option.specRoot' is not equal to the string '/spec'." )
+          assert( (includeMocha.option.specRoot === 'spec/'), "'includeMocha.option.specRoot' is not equal to the string 'spec/'." )
 
           clearEnvironment();
 
         });
 
         it( 'Should be equal to the param "option.specRoot" if it is defined.', function(){
-
+          clearEnvironment();
           var optionArr = [
             { specPath : "", specRoot : null },
             { specPath : "", specRoot : "/specRoot" }
@@ -871,77 +908,582 @@ describe( "include-mocha.js", function(){
           }
         });
       });
-      //
-      /* includeMocha.option.cssPath */
-        //
-        //-- Should be array or null
-        //-- Should contain one element "mocha.js" if the param "option.cssPath" is undefined.
-        //-- Should be equal to the param "option.cssPath" if it is defined.
-      //
-      /* includeMocha.option.cssRoot */
-        //
-        //-- Should be string or null
-        //-- Should be equal to "css/" if the param "option.cssRoot" is undefined.
-        //-- Should be equal to the param "option.cssRoot" if ot is defined.
-      //
-      /* includeMocha.option.useChai */
-        //
-        //-- Should be boolean
-        //-- Should be equal to true if the param "option.useChai" is undefined.
-        //-- Should be equal to the param "option.useChai" if it is defined.
-      //
-      /* includeMocha.option.defineAssert */
-        //
-        //-- Should be boolean
-        //-- Should be equal to true if the param "option.defineAssert" is undefined.
-        //-- Should be equal to the param "option.defineAssert" if it is defined.
-      //
-      /* includeMocha.option.mochaPath */
-        //
-        //-- Should be string
-        //-- Should be equal to "mocha.js" if the param "option.mochaPath" is undefined.
-        //-- Should be equal to the param "option.mochaPath" if it is defined.
-      //
-      /* includeMocha.option.chaiPath */
-        //
-        //-- Should be string
-        //-- Should be equal to "chai.js" if the param "option.chaiPath" is undefined.
-        //-- Should be equal to the param "option.chaiPath" if it is defined.
-      //
-      /* includeMocha.option.libRoot */
-        //-- Should be string or null
-        //-- Should be equal to "lib/" if the param "option.libRoot" is undefined.
-        //-- Should be equal to the param "option.libRoot" if it is defined.
-      //
-      /* includeMocha.option.mochaSetup */
-        //
-        //-- Should be string or object of the class "Object".
-        //-- Should be equal to "bdd" if the param "option.mochaSetup" is undefined.
-        //-- Should be equal to the param "option.mochaSetup" if it is defined.
-      //
+
+      describe( 'icnludeMocha.option.cssPath', function(){
+
+        it( 'Should be array or null', function(){
+          clearEnvironment();
+          var optionArr = [
+            { specPath : "" },
+            { specPath : "", cssPath : null },
+            { specPath : "", cssPath : "string" },
+            { specPath : "", cssPath : ["string", "cssPath"] }
+          ];
+
+          for (var i=0; i<optionArr.length; i++){
+
+            var result = includeMocha( optionArr[i] );
+            var cssPath = includeMocha.option.cssPath;
+
+            assert.isUndefined( result );
+            assert( (cssPath === null || ( cssPath instanceof Array ) ), "'includeMocha.option.cssPath' is not string or null." );
+
+            clearEnvironment();
+          }
+        });
+
+        it( 'Should contain one element "mocha.css" if the param "option.cssPath" is undefined.', function(){
+          clearEnvironment();
+          var result = window.includeMocha( 'specPath' );
+
+          assert.isUndefined( result );
+          var cssPath = window.includeMocha.option.cssPath;
+          assert.lengthOf( cssPath, 1 );
+          assert( (cssPath[0] === 'mocha.css'), "includeMocha.option.cssPath is not equal to 'mocha.css'" );
+
+        });
+
+        it( 'Should be equal to the param "option.cssPath" if it is null.', function(){
+          clearEnvironment();
+          var option = { specPath : "specPath", cssPath : null }
+
+          var result = window.includeMocha( option );
+          assert.isUndefined( result );
+
+          assert.isNull( window.includeMocha.option.cssPath );
+
+          clearEnvironment();
+        });
+
+        it( 'Should contain one element equal to the param "option.specPath" if it is string.', function(){
+          clearEnvironment();
+          var option = { specPath : "specPath", cssPath : "cssPath" };
+          var includeMocha = window.includeMocha;
+
+          var result = includeMocha( option );
+          assert.isUndefined( result );
+
+          var cssPath = includeMocha.option.cssPath;
+          assert.lengthOf( cssPath, 1 );
+          assert( cssPath[0] === option.cssPath, "'includeMocha.option.cssPath' don't equal to the input value." );
+
+          clearEnvironment();
+        });
+
+        it( 'Should contain all elements of the param "option.cssPath" if it is array.', function(){
+          clearEnvironment();
+          var option = {
+            specPath : "specPath",
+            cssPath : [ "cssPath0", "cssPath1" ]
+          };
+          var includeMocha = window.includeMocha;
+
+          var result = includeMocha( option );
+          assert.isUndefined( result );
+
+          var cssPath = includeMocha.option.cssPath;
+          assert( areEqualArrays( option.cssPath, cssPath ), "'includeMocha.option.cssPath' don't equal to input array." );
+
+          clearEnvironment();
+        });
+      });
+
+      describe( 'includeMocha.option.cssRoot', function(){
+
+        it( 'Should be string or null', function(){
+          clearEnvironment();
+          var optionArr = [
+            "specPath",
+            { specPath : "specPath", cssRoot : null },
+            { specPath : "specPath", cssRoot : "cssRoot" }
+          ];
+
+          for (var i=0; i<optionArr.length; i++){
+
+            var includeMocha = window.includeMocha;
+            var result = includeMocha( optionArr[i] );
+            assert.isUndefined( result );
+
+            var cssRoot = includeMocha.option.cssRoot;
+            assert( ( (cssRoot === null) || (typeof( cssRoot ) === 'string') ), "'includeMocha.option.cssRoot' is not null or string." );
+
+            clearEnvironment();
+          }
+        });
+
+        it( 'Should be equal to "css/" if the param "option.cssRoot" is undefined.', function(){
+          clearEnvironment();
+          var option = "specPath";
+
+          var result = includeMocha( option );
+          assert.isUndefined( result );
+
+          assert( (includeMocha.option.cssRoot === 'css/'), "'includeMocha.option.specRoot' is not equal to the string '/spec'." )
+
+          clearEnvironment();
+        });
+
+        it( 'Should be equal to the param "option.cssRoot" if it is defined.', function(){
+          clearEnvironment();
+          var optionArr = [
+            { specPath : "", cssRoot : null },
+            { specPath : "", cssRoot : "cssRoot/" }
+          ];
+
+          for (var i=0; i<optionArr.length; i++){
+
+            var result = includeMocha( optionArr[i] );
+            assert.isUndefined( result );
+
+            assert( includeMocha.option.cssRoot === optionArr[i].cssRoot );
+
+            clearEnvironment();
+          }
+        });
+      });
+
+      describe( 'includeMocha.option.useChai', function(){
+
+        it( 'Should be boolean', function(){
+          clearEnvironment();
+          var optionArr = [
+            "specPath",
+            { specPath : "specPath", useChai : true },
+            { specPath : "specPath", useChai : false }
+          ];
+
+          for (var i=0; i<optionArr.length; i++){
+
+            var result = includeMocha( optionArr[i] );
+            assert.isUndefined( result );
+
+            assert.isBoolean( includeMocha.option.useChai );
+
+            clearEnvironment();
+          }
+        });
+
+        it( 'Should be equal to true if the param "option.useChai" is undefined.', function(){
+          clearEnvironment();
+          var option = "specPath";
+
+          var result = includeMocha( option );
+          assert.isUndefined( result );
+
+          assert.isTrue( includeMocha.option.useChai );
+
+          clearEnvironment();
+        });
+
+        it( 'Should be equal to the param "option.useChai" if it is defined.', function(){
+          clearEnvironment();
+          var optionArr = [
+            { specPath : "specPath", useChai : true },
+            { specPath : "specPath", useChai : false }
+          ];
+
+          for (var i=0; i<optionArr.length; i++){
+
+            var result = includeMocha( optionArr[i] );
+            assert.isUndefined( result );
+
+            assert( includeMocha.option.useChai === optionArr[i].useChai );
+
+            clearEnvironment();
+          }
+        });
+      });
+
+      describe( 'includeMocha.option.defineAssert', function(){
+
+        it( 'Should be boolean', function(){
+          clearEnvironment();
+          var optionArr = [
+            "specPath",
+            { specPath : "specPath", defineAssert : true },
+            { specPath : "specPath", defineAssert : false }
+          ];
+
+          for (var i=0; i<optionArr.length; i++){
+
+            var result = includeMocha( optionArr[i] );
+            assert.isUndefined( result );
+
+            assert.isBoolean( includeMocha.option.defineAssert );
+
+            clearEnvironment();
+          }
+        });
+
+        it( 'Should be equal to true if the param "option.defineAssert" is undefined.', function(){
+          clearEnvironment();
+          var option = "specPath";
+
+          var result = includeMocha( option );
+          assert.isUndefined( result );
+
+          assert.isTrue( includeMocha.option.defineAssert );
+
+          clearEnvironment();
+        });
+
+        it( 'Should be equal to the param "option.defineAssert" if it is defined.', function(){
+          clearEnvironment();
+          var optionArr = [
+            { specPath : "specPath", defineAssert : true },
+            { specPath : "specPath", defineAssert : false }
+          ];
+
+          for (var i=0; i<optionArr.length; i++){
+
+            var result = includeMocha( optionArr[i] );
+            assert.isUndefined( result );
+
+            assert( includeMocha.option.defineAssert === optionArr[i].defineAssert );
+
+            clearEnvironment();
+          }
+        });
+      });
+
+      describe( 'includeMocha.option.mochaPath', function(){
+        it( 'Should be string', function(){
+          clearEnvironment();
+          var optionArr = [
+            "specPath",
+            { specPath : "specPath", mochaPath : "mochaPath" }
+          ];
+
+          for (var i=0; i<optionArr.length; i++){
+
+            var result = includeMocha( optionArr[i] );
+            assert.isUndefined( result );
+
+            assert.isString( includeMocha.option.mochaPath );
+
+            clearEnvironment();
+          }
+        });
+
+        it( 'Should be equal to "mocha.js" if the param "option.mochaPath" is undefined.', function(){
+          clearEnvironment();
+          var option = "specPath";
+
+          var result = includeMocha( option );
+          assert.isUndefined( result );
+
+          var mochaPath = includeMocha.option.mochaPath;
+          assert( mochaPath === 'mocha.js', "'includeMocha.option.mochaPath' don't equal to the string 'mocha.js'." );
+
+          clearEnvironment();
+        });
+
+        it( 'Should be equal to the param "option.mochaPath" if it is defined.', function(){
+          clearEnvironment();
+          var option = { specPath : "spwcPath", mochaPath : "mochaPath" };
+
+          var result = includeMocha( option );
+          assert.isUndefined( result );
+
+          assert( includeMocha.option.mochaPath === option.mochaPath, "'includeMocha.option.mochaPath' don't equal to the input value." )
+
+          clearEnvironment();
+        });
+      });
+
+      describe( 'includeMocha.option.chaiPath', function(){
+
+        it( 'Should be string', function(){
+          clearEnvironment();
+          var optionArr = [
+            "specPath",
+            { specPath : "specPath", chaiPath : "chaiPath" }
+          ];
+
+          for (var i=0; i<optionArr.length; i++){
+
+            var result = includeMocha( optionArr[i] );
+            assert.isUndefined( result );
+
+            assert.isString( includeMocha.option.chaiPath );
+
+            clearEnvironment();
+          }
+        });
+
+        it( 'Should be equal to "chai.js" if the param "option.chaiPath" is undefined.', function(){
+          clearEnvironment();
+          var option = "specPath";
+
+          var result = includeMocha( option );
+          assert.isUndefined( result );
+
+          var chaiPath = includeMocha.option.chaiPath;
+          assert( chaiPath === 'chai.js', "'includeMocha.option.chaiPath' don't equal to the string 'chai.js'." );
+
+          clearEnvironment();
+        });
+
+        it( 'Should be equal to the param "option.chaiPath" if it is defined.', function(){
+          clearEnvironment();
+          var option = { specPath : "specPath", chaiPath : "chaiPath" };
+
+          var result = includeMocha( option );
+          assert.isUndefined( result );
+
+          assert( includeMocha.option.chaiPath === option.chaiPath, "'includeMocha.option.chaiPath' don't equal to the input value." )
+
+          clearEnvironment();
+        });
+      });
+
+      describe( 'includeMocha.option.libRoot', function(){
+
+        it( 'Should be string or null', function(){
+          clearEnvironment();
+          var optionArr = [
+            "specPath",
+            { specPath : "specPath", csslibRootRoot : null },
+            { specPath : "specPath", libRoot : "libRoot" }
+          ];
+
+          for (var i=0; i<optionArr.length; i++){
+
+            var includeMocha = window.includeMocha;
+            var result = includeMocha( optionArr[i] );
+            assert.isUndefined( result );
+
+            var libRoot = includeMocha.option.libRoot;
+            assert( ( (libRoot === null) || (typeof( libRoot ) === 'string') ), "'includeMocha.option.libRoot' is not null or string." );
+
+            clearEnvironment();
+          }
+        });
+
+        it( 'Should be equal to "lib/" if the param "option.libRoot" is undefined.', function(){
+          clearEnvironment();
+          var result = includeMocha( "specPath" );
+          assert.isUndefined( result );
+
+          var libRoot = includeMocha.option.libRoot;
+          assert( libRoot === 'lib/', "'includeMocha.option.libRoot' don't equal to the string 'lib/'." );
+
+          clearEnvironment();
+        });
+
+        it( 'Should be equal to the param "option.libRoot" if it is defined.', function(){
+          clearEnvironment();
+          var optionArr = [
+            { specPath : "", libRoot : "libRoot/" }
+          ];
+
+          for (var i=0; i<optionArr.length; i++){
+
+            var result = includeMocha( optionArr[i] );
+            assert.isUndefined( result );
+
+            assert( includeMocha.option.libRoot === optionArr[i].libRoot );
+
+            clearEnvironment();
+          }
+        });
+      });
+
+      describe( 'includeMocha.option.mochaSetup', function(){
+        clearEnvironment();
+        it( 'Should be string or object of the class "Object".', function(){
+
+          var optionArr = [
+            { specPath : "specPath", mochaSetup : "mochaSetup" },
+            { specPath : "specPath", mochaSetup : { ui : "bdd"} }
+          ];
+
+          for (var i=0; i<optionArr.length; i++){
+
+            var result = includeMocha( optionArr[i] );
+            assert.isUndefined( result );
+
+            var mochaSetup = includeMocha.option.mochaSetup;
+            assert( ( typeof(mochaSetup) == 'string' ) || isSimpleObject( mochaSetup ), "'includeMocha.option.mochaSetup' is not string or an object of class 'Object'."  )
+
+            clearEnvironment();
+          }
+        });
+
+        it( 'Should be equal to "bdd" if the param "option.mochaSetup" is undefined.', function(){
+          clearEnvironment();
+          var result = includeMocha( "specPath" );
+          assert.isUndefined( result );
+
+          var mochaSetup = includeMocha.option.mochaSetup;
+          assert( mochaSetup === 'bdd', "'includeMocha.option.mochaSetup' don't equal to the string 'bdd'" );
+
+          clearEnvironment();
+        });
+
+        it( 'Should be equal to the param "option.mochaSetup" if it is defined.', function(){
+          clearEnvironment();
+          var option = {
+            specPath : "specPath",
+            mochaSetup : { ui : "bdd", ignoreLeaks : true }
+          }
+
+          var result = includeMocha( option );
+          assert.isUndefined( result );
+
+          var mochaSetup = includeMocha.option.mochaSetup;
+          assert.deepEqual( option.mochaSetup, mochaSetup );
+
+          clearEnvironment();
+        });
+      });
     });
-    //
-    /* Check the inclusion of css and lib files */
-      //
-      /* Check the inclusion stylesheets */
-        //
-        //-- The DON-node "head" should contain the DOM-node "link" for each element of the array "includeMocha.option.cssPath" for it is not null.
-        //-- The attribute "href" of each inserted node should be equal to the string (includeMocha.option.cssRoot + includeMocha.option.cssPath[i]) if includeMocha.option.cssPath is not null.
-      //
-      /* Check the inclusion of lib files */
-        //
-        //-- The DON-node "head" should contain the DOM-node "script" that has the attribute "src" equal to the string (includeMocha.option.libRoot + includeMocha.option.mochaPath).
-        //-- The DON-node "head" should contain the DOM-node "script" that has the attribute "src" equal to the string (includeMocha.option.libRoot + includeMocha.option.chaiPath) if the includeMocha.option.useChai is true.
-      //
-    //
-    /* Check mocha.setup() errors */
-      //
-      // Should return an object of the class "Error" if the function "mocha.setup()" threw error.
-    //
-    /* Check the inclusion of spec files */
-      //
-      //-- The DON-node "head" should contain the DOM-node "script" for each element of the array "includeMocha.option.cssPath".
+
+    describe('Check the inclusion of css and lib files', function(){
+
+      describe( 'Check the inclusion stylesheets', function(){
+
+        it( 'The DOM-node "head" should contain the DOM-node "link" for each element of the array "includeMocha.option.cssPath" for it is not null.', function(){
+          clearEnvironment();
+
+          var linkCountOnInit = document.querySelectorAll( 'head link' ).length;
+
+          var result = includeMocha({
+            specPath : 'specPath',
+            cssPath : [
+              'cssPath0',
+              'cssPath1',
+              'cssPath2',
+              'cssPath3',
+              'cssPath4'
+            ]
+          });
+          assert.isUndefined( result );
+
+          var linkCount = document.querySelectorAll( 'head link' ).length;
+          var cssPathCount = includeMocha.option.cssPath.length;
+
+          assert( (linkCount == ( linkCountOnInit + cssPathCount ) ), 'Wrong count of the tags "link".' );
+
+          clearEnvironment();
+        });
+
+        it( 'The attribute "href" of each inserted node should be equal to the string (includeMocha.option.cssRoot + includeMocha.option.cssPath[i]).', function(){
+          clearEnvironment();
+          var result = includeMocha({
+            specPath : 'specPath',
+            cssPath : [
+              'cssPath0',
+              'cssPath1',
+              'cssPath2',
+              'cssPath3',
+              'cssPath4'
+            ]
+          });
+          assert.isUndefined( result );
+
+          var hrefArray = [];
+          includeMocha.option.cssPath.forEach(function(cssPath, i, cssPathArray){
+            hrefArray.push( includeMocha.option.cssRoot + cssPath );
+          });
+
+          var linkNodeList = document.querySelectorAll('head link');
+          [].forEach.call( linkNodeList, function(linkNode, i, linkNodeList){
+            if ( linkNode.includeMocha ){
+              assert.include( hrefArray, linkNode.getAttribute('href') );
+            }
+          });
+
+          clearEnvironment();
+        });
+
+      });
+
+
+      describe( 'Check the inclusion of lib files', function(){
+
+        it( 'The DOM-node "head" should contain the DOM-node "script" that has the attribute "src" equal to the string (includeMocha.option.libRoot + includeMocha.option.mochaPath).', function(){
+          clearEnvironment();
+          var option = {
+            specPath : 'specPath',
+            mochaPath : "mochaPath",
+            libRoot : 'libRoot/'
+          };
+
+          var result = includeMocha( option );
+          assert.isUndefined( result );
+
+          var src = option.libRoot + option.mochaPath;
+          var scriptIsIncluded = false;
+          var scriptNodeList = document.querySelectorAll('head script');
+          [].forEach.call( scriptNodeList, function(scriptNode, i, scriptNodeList){
+            if ( scriptNode.getAttribute('src') == src ){
+              scriptIsIncluded = true;
+            }
+          });
+
+          assert( scriptIsIncluded, 'Inserted tag "script" not found.');
+
+          clearEnvironment();
+        });
+
+        it( 'The DOM-node "head" should contain the DOM-node "script" that has the attribute "src" equal to the string (includeMocha.option.libRoot + includeMocha.option.chaiPath) if the includeMocha.option.useChai is true.', function(){
+          clearEnvironment();
+          var option = {
+            specPath : 'specPath',
+            chaiPath : 'chaiPath',
+            libRoot : 'libRoot'
+          }
+
+          var result = includeMocha( option );
+          assert.isUndefined( result );
+
+          var src = option.libRoot + option.chaiPath;
+          var scriptNodeList = document.querySelectorAll('head script');
+          var scriptIsIncluded = false;
+          [].forEach.call( scriptNodeList, function(scriptNode, i, scriptNodeList){
+            if ( scriptNode.getAttribute('src') == src ){
+              scriptIsIncluded = true;
+            }
+          });
+
+          assert(scriptIsIncluded, 'Inserted tag "script" not found.');
+
+          clearEnvironment();
+        });
+
+      });
+
+    });
+
+    describe( 'Check the inclusion of spec files', function(){
+
+      it( 'The DOM-node "head" should contain the DOM-node "script" for each element of the array "includeMocha.option.specPath".', wrIt(function(){
+        var result = includeMocha({
+          specPath : [
+            'specPath0',
+            'specPath1',
+            'specPath2',
+            'specPath3',
+            'specPath4'
+          ]
+        });
+        assert.isUndefined( result );
+
+        var srcArray = [];
+        includeMocha.option.specPath.forEach(function(specPath, i, specPathArray){
+          srcArray.push( includeMocha.option.libRoot + specPath );
+        });
+
+        var scriptNodeList = document.querySelectorAll('head script');
+        [].forEach.call( scriptNodeList, function(scriptNode, i, scriptNodeList){
+          if ( scriptNode.includeMocha ){
+            assert.include( srcArray, scriptNode.getAttribute('src') );
+          }
+        });
+      }));
       //-- The attribute "src" of each inserted node should be equal to the string (includeMocha.option.cssRoot + includeMocha.option.specPath[i]).
+    });
     //
     /* Check mocha.run() errors */
       //
